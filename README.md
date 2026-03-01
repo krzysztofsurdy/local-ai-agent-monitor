@@ -88,12 +88,6 @@ npm start
 ### Docker
 
 ```bash
-docker compose up --build
-```
-
-Or pull from Docker Hub:
-
-```bash
 docker run -d \
   --name barko \
   --pid=host \
@@ -103,7 +97,8 @@ docker run -d \
   ydrus/barko:latest
 ```
 
-The `--pid=host` flag lets Barko see host processes. The volume mount is read-only.
+- `--pid=host` lets Barko see host processes for the Processes page
+- The volume mount is read-only -- Barko never writes to `~/.claude/`
 
 ## Project Structure
 
