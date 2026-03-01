@@ -91,6 +91,9 @@ export default function TasksPage() {
                   owner={task.owner}
                   teamName={task.teamName}
                   blockedBy={task.blockedBy}
+                  blocks={task.blocks}
+                  description={task.description}
+                  activeForm={task.activeForm}
                 />
               ))}
             </tbody>

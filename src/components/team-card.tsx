@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyableId } from "./copyable-id";
 
 interface TeamMember {
   name: string;
@@ -55,7 +56,10 @@ export function TeamCard({
       className="block rounded-lg border border-card-border bg-card-bg p-4 hover:border-sidebar-active/50 transition-colors"
     >
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold">{name}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold">{name}</h3>
+          <CopyableId value={name} className="text-foreground/40" />
+        </div>
         <span className="text-xs text-foreground/40">
           {members.length} member{members.length !== 1 ? "s" : ""}
         </span>

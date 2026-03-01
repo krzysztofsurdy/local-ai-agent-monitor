@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { LogViewer } from "@/components/log-viewer";
+import { CopyableId } from "@/components/copyable-id";
 import { useSSE } from "@/lib/use-sse";
 import type { AILogFile } from "@/lib/types";
 
@@ -71,7 +72,7 @@ export default function LogsPage() {
                     : ""
                 }`}
               >
-                <div className="font-mono truncate">{file.name}</div>
+                <CopyableId value={file.name} truncate={40} />
                 <div className="text-foreground/30 flex justify-between mt-0.5">
                   <span>{formatSize(file.size)}</span>
                   <span>

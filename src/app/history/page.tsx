@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { CopyableId } from "@/components/copyable-id";
 import type { AISession } from "@/lib/types";
+
+function decodeProject(encoded: string): string {
+  return encoded.replace(/^-/, "/").replace(/-/g, "/");
+}
 
 export default function HistoryPage() {
   const [sessions, setSessions] = useState<AISession[]>([]);
@@ -64,14 +70,26 @@ export default function HistoryPage() {
                   key={session.sessionId}
                   className="border-b border-card-border hover:bg-card-bg/50 transition-colors"
                 >
-                  <td className="py-2.5 px-3 text-xs font-mono text-foreground/50">
-                    {session.sessionId.slice(0, 8)}...
+                  <td className="py-2.5 px-3">
+                    <div className="flex items-center gap-2">
+                      <CopyableId
+                        value={session.sessionId}
+                        truncate={8}
+                        className="text-foreground/50"
+                      />
+                      {session.project && (
+                        <Link
+                          href={`/conversations/${session.sessionId}?project=${encodeURIComponent(session.project)}`}
+                          className="text-[10px] px-1.5 py-0.5 rounded bg-sidebar-active/10 text-sidebar-active hover:bg-sidebar-active/20 transition-colors"
+                        >
+                          View
+                        </Link>
+                      )}
+                    </div>
                   </td>
-                  <td className="py-2.5 px-3 text-sm">
+                  <td className="py-2.5 px-3 text-sm font-mono text-xs truncate max-w-[200px]">
                     {session.project
-                      ? decodeURIComponent(
-                          session.project.replace(/-/g, "/")
-                        ).slice(0, 40)
+                      ? decodeProject(session.project).slice(0, 40)
                       : "-"}
                   </td>
                   <td className="py-2.5 px-3 text-xs capitalize">

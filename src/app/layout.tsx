@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Local AI Agent Monitor",
+  title: "Barko",
   description: "Monitor and visualize all AI coding agent activity on your local machine",
 };
 
@@ -27,6 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <Sidebar />
         <main className="ml-56 min-h-screen p-6">{children}</main>

@@ -2,58 +2,128 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { ConfigViewer } from "@/components/config-viewer";
+import { MCPServerCard } from "@/components/mcp-server-card";
 import { useSSE } from "@/lib/use-sse";
-import type { AIConfig } from "@/lib/types";
+import type { AIConfig, AIMCPServer } from "@/lib/types";
+
+type Tab = "config" | "mcp";
 
 export default function ConfigPage() {
   const [configs, setConfigs] = useState<AIConfig[]>([]);
+  const [mcpServers, setMcpServers] = useState<AIMCPServer[]>([]);
+  const [activeProvider, setActiveProvider] = useState<string>("claude");
+  const [activeTab, setActiveTab] = useState<Tab>("config");
 
   const fetchConfig = useCallback(async () => {
     const res = await fetch("/api/config");
     setConfigs(await res.json());
   }, []);
 
+  const fetchMCP = useCallback(async () => {
+    const res = await fetch("/api/agents");
+    const data = await res.json();
+    setMcpServers(data.mcpServers || []);
+  }, []);
+
   useEffect(() => {
     fetchConfig();
-  }, [fetchConfig]);
+    fetchMCP();
+  }, [fetchConfig, fetchMCP]);
 
   useSSE((event) => {
-    if (event === "fileChange") fetchConfig();
+    if (event === "fileChange") {
+      fetchConfig();
+      fetchMCP();
+    }
   });
+
+  const providers = configs.map((c) => c.provider);
+  const currentConfig = configs.find((c) => c.provider === activeProvider);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Configuration</h1>
         <p className="text-foreground/50 text-sm mt-1">
-          AI agent configuration and rules files
+          AI agent configuration, rules, and MCP servers
         </p>
       </div>
 
-      {configs.map((config) => (
-        <div key={config.provider} className="space-y-4">
-          <h2 className="text-lg font-semibold capitalize">
-            {config.provider}
-          </h2>
+      {/* Provider selector */}
+      {providers.length > 0 && (
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-foreground/40">Provider:</span>
+          <div className="flex gap-2">
+            {providers.map((provider) => (
+              <button
+                key={provider}
+                onClick={() => setActiveProvider(provider)}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors capitalize ${
+                  activeProvider === provider
+                    ? "bg-sidebar-active text-white"
+                    : "bg-card-bg text-foreground/60 hover:text-foreground border border-card-border"
+                }`}
+              >
+                {provider === "claude"
+                  ? "Claude Code"
+                  : provider === "gemini"
+                    ? "Gemini CLI"
+                    : provider === "cursor"
+                      ? "Cursor"
+                      : provider === "copilot"
+                        ? "Copilot"
+                        : provider}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab selector */}
+      <div className="flex gap-2 border-b border-card-border pb-0">
+        {(["config", "mcp"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-sm transition-colors border-b-2 -mb-px ${
+              activeTab === tab
+                ? "border-sidebar-active text-sidebar-active"
+                : "border-transparent text-foreground/50 hover:text-foreground/70"
+            }`}
+          >
+            {tab === "config" ? "Configuration" : `MCP Servers (${mcpServers.length})`}
+          </button>
+        ))}
+      </div>
+
+      {/* Config tab */}
+      {activeTab === "config" && currentConfig && (
+        <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <ConfigViewer
-              title="Global Rules (CLAUDE.md)"
-              content={config.globalRules}
+              title={
+                activeProvider === "claude"
+                  ? "Global Rules (CLAUDE.md)"
+                  : "Global Rules"
+              }
+              content={currentConfig.globalRules}
               language="markdown"
             />
             <div className="space-y-4">
               <ConfigViewer
                 title="settings.json"
                 content={
-                  config.settings ? JSON.stringify(config.settings) : null
+                  currentConfig.settings
+                    ? JSON.stringify(currentConfig.settings, null, 2)
+                    : null
                 }
                 language="json"
               />
               <ConfigViewer
                 title="settings.local.json"
                 content={
-                  config.settingsLocal
-                    ? JSON.stringify(config.settingsLocal)
+                  currentConfig.settingsLocal
+                    ? JSON.stringify(currentConfig.settingsLocal, null, 2)
                     : null
                 }
                 language="json"
@@ -61,7 +131,36 @@ export default function ConfigPage() {
             </div>
           </div>
         </div>
-      ))}
+      )}
+
+      {activeTab === "config" && !currentConfig && (
+        <div className="text-center py-16 text-foreground/40">
+          No configuration found for this provider
+        </div>
+      )}
+
+      {/* MCP tab */}
+      {activeTab === "mcp" && (
+        <div>
+          {mcpServers.length === 0 ? (
+            <div className="text-center py-16 text-foreground/40">
+              No MCP servers configured
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {mcpServers.map((server) => (
+                <MCPServerCard
+                  key={server.name}
+                  name={server.name}
+                  command={server.command}
+                  args={server.args}
+                  envKeys={server.envKeys}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -44,6 +44,9 @@ export default function SkillsPage() {
               version={skill.version}
               installedAt={skill.installedAt}
               scope={skill.scope}
+              gitCommitSha={skill.gitCommitSha}
+              installPath={skill.installPath}
+              lastUpdated={skill.lastUpdated}
             />
           ))}
         </div>

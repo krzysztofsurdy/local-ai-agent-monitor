@@ -1,0 +1,9 @@
+services:
+  monitor:
+    build: .
+    ports:
+      - "3000:3000"
+    pid: host
+    volumes:
+      - ~/.claude:/home/nextjs/.claude:ro
+    restart: unless-stopped

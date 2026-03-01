@@ -80,3 +80,72 @@ export interface AISession {
   model?: string;
   provider: AIProvider;
 }
+
+export interface AIConversationSession {
+  sessionId: string;
+  project: string;
+  projectPath: string;
+  messageCount: number;
+  startTime?: string;
+  endTime?: string;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  provider: AIProvider;
+}
+
+export interface AIMessageContent {
+  type: "text" | "tool_use" | "tool_result" | "thinking";
+  text?: string;
+  id?: string;
+  name?: string;
+  input?: Record<string, unknown>;
+  content?: string;
+  thinking?: string;
+}
+
+export interface AIMessage {
+  uuid: string;
+  parentUuid?: string;
+  type: "user" | "assistant" | "file-history-snapshot";
+  sessionId: string;
+  timestamp: string;
+  content: AIMessageContent[] | string;
+  model?: string;
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    cache_read_input_tokens?: number;
+    cache_creation_input_tokens?: number;
+  };
+}
+
+export interface AIMCPServer {
+  name: string;
+  command: string;
+  args: string[];
+  envKeys: string[];
+  provider: AIProvider;
+}
+
+export interface AIPluginDetail {
+  name: string;
+  marketplace: string;
+  version: string;
+  description?: string;
+  keywords?: string[];
+  author?: string;
+  scope: string;
+  installPath: string;
+  installedAt: string;
+  lastUpdated: string;
+  gitCommitSha?: string;
+  provider: AIProvider;
+}
+
+export interface AIMarketplace {
+  name: string;
+  repoUrl: string;
+  installLocation?: string;
+  lastUpdated?: string;
+  provider: AIProvider;
+}

@@ -6,6 +6,12 @@ import type {
   AIConfig,
   AILogFile,
   AISession,
+  AIConversationSession,
+  AIMessage,
+  AIMessageContent,
+  AIMCPServer,
+  AIPluginDetail,
+  AIMarketplace,
 } from "../types";
 import type { AIProviderAdapter } from "./index";
 import { getClaudeProcesses } from "../process-monitor";
@@ -15,6 +21,15 @@ import { getSkills as getSkillsRaw } from "../skill-reader";
 import { getConfig as getConfigRaw } from "../config-reader";
 import { getLogFiles as getLogFilesRaw, getLogContent } from "../log-reader";
 import { getHistory as getHistoryRaw } from "../history-reader";
+import {
+  getConversationSessions as getConvSessionsRaw,
+  getConversationMessages as getConvMessagesRaw,
+} from "../conversation-reader";
+import {
+  getMCPServers as getMCPServersRaw,
+  getPluginDetails as getPluginDetailsRaw,
+  getMarketplaces as getMarketplacesRaw,
+} from "../agent-reader";
 import { PATHS } from "../claude-paths";
 
 export class ClaudeAdapter implements AIProviderAdapter {
@@ -81,6 +96,66 @@ export class ClaudeAdapter implements AIProviderAdapter {
     }));
   }
 
+  getConversationSessions(limit?: number): AIConversationSession[] {
+    return getConvSessionsRaw(limit).map((s) => ({
+      ...s,
+      provider: "claude" as const,
+    }));
+  }
+
+  getConversationMessages(project: string, sessionId: string): AIMessage[] {
+    return getConvMessagesRaw(project, sessionId).map((m) => {
+      let content: AIMessageContent[] | string;
+      if (typeof m.content === "string") {
+        content = m.content;
+      } else if (Array.isArray(m.content)) {
+        content = (m.content as Record<string, unknown>[]).map((block) => ({
+          type: (block.type as string) || "text",
+          text: block.text as string | undefined,
+          id: block.id as string | undefined,
+          name: block.name as string | undefined,
+          input: block.input as Record<string, unknown> | undefined,
+          content: block.content as string | undefined,
+          thinking: block.thinking as string | undefined,
+        })) as AIMessageContent[];
+      } else {
+        content = String(m.content || "");
+      }
+
+      return {
+        uuid: m.uuid,
+        parentUuid: m.parentUuid,
+        type: m.type,
+        sessionId: m.sessionId,
+        timestamp: m.timestamp,
+        content,
+        model: m.model,
+        usage: m.usage,
+      };
+    });
+  }
+
+  getMCPServers(): AIMCPServer[] {
+    return getMCPServersRaw().map((s) => ({
+      ...s,
+      provider: "claude" as const,
+    }));
+  }
+
+  getPluginDetails(): AIPluginDetail[] {
+    return getPluginDetailsRaw().map((p) => ({
+      ...p,
+      provider: "claude" as const,
+    }));
+  }
+
+  getMarketplaces(): AIMarketplace[] {
+    return getMarketplacesRaw().map((m) => ({
+      ...m,
+      provider: "claude" as const,
+    }));
+  }
+
   getWatchPaths(): string[] {
     return [
       PATHS.teams,
@@ -90,6 +165,7 @@ export class ClaudeAdapter implements AIProviderAdapter {
       PATHS.settingsLocal,
       PATHS.globalClaudeMd,
       PATHS.debug,
+      PATHS.projects,
     ];
   }
 }

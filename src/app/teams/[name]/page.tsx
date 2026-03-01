@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { StatusBadge } from "@/components/status-badge";
+import { CopyableId } from "@/components/copyable-id";
 import { useSSE } from "@/lib/use-sse";
 import type { AITeam, AITask } from "@/lib/types";
 
@@ -89,6 +90,11 @@ export default function TeamDetailPage() {
                   <div className="text-xs text-foreground/40">
                     {member.agentType}
                   </div>
+                  <CopyableId
+                    value={member.agentId}
+                    truncate={20}
+                    className="text-[10px] text-foreground/30"
+                  />
                 </div>
               </div>
               {member.model && (
@@ -158,7 +164,7 @@ function TaskCard({ task }: { task: AITask }) {
   return (
     <div className="rounded-lg border border-card-border bg-card-bg p-3">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-mono text-foreground/40">#{task.id}</span>
+        <CopyableId value={task.id} label="#" className="text-foreground/40" />
         <StatusBadge status={task.status} />
       </div>
       <div className="text-sm font-medium">{task.subject}</div>

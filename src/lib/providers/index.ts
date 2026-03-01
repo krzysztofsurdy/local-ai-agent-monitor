@@ -10,6 +10,11 @@ import type {
   AIConfig,
   AILogFile,
   AISession,
+  AIConversationSession,
+  AIMessage,
+  AIMCPServer,
+  AIPluginDetail,
+  AIMarketplace,
 } from "../types";
 
 export interface AIProviderAdapter {
@@ -24,6 +29,11 @@ export interface AIProviderAdapter {
   getLogFiles(): AILogFile[];
   getLogContent(fileName: string, tailLines?: number): string;
   getHistory(limit?: number): AISession[];
+  getConversationSessions(limit?: number): AIConversationSession[];
+  getConversationMessages(project: string, sessionId: string): AIMessage[];
+  getMCPServers(): AIMCPServer[];
+  getPluginDetails(): AIPluginDetail[];
+  getMarketplaces(): AIMarketplace[];
   getWatchPaths(): string[];
 }
 
@@ -69,6 +79,42 @@ export function aggregateHistory(limit?: number): AISession[] {
         new Date(a.startTime || 0).getTime()
     )
     .slice(0, limit || 50);
+}
+
+export function aggregateConversationSessions(
+  limit?: number
+): AIConversationSession[] {
+  return adapters
+    .flatMap((a) => a.getConversationSessions(limit))
+    .sort(
+      (a, b) =>
+        new Date(b.startTime || 0).getTime() -
+        new Date(a.startTime || 0).getTime()
+    )
+    .slice(0, limit || 100);
+}
+
+export function aggregateConversationMessages(
+  project: string,
+  sessionId: string
+): AIMessage[] {
+  for (const a of adapters) {
+    const messages = a.getConversationMessages(project, sessionId);
+    if (messages.length > 0) return messages;
+  }
+  return [];
+}
+
+export function aggregateMCPServers(): AIMCPServer[] {
+  return adapters.flatMap((a) => a.getMCPServers());
+}
+
+export function aggregatePluginDetails(): AIPluginDetail[] {
+  return adapters.flatMap((a) => a.getPluginDetails());
+}
+
+export function aggregateMarketplaces(): AIMarketplace[] {
+  return adapters.flatMap((a) => a.getMarketplaces());
 }
 
 export function aggregateWatchPaths(): string[] {

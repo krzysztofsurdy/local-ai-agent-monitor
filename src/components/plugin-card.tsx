@@ -3,27 +3,33 @@
 import { useState } from "react";
 import { CopyableId } from "./copyable-id";
 
-interface SkillCardProps {
+interface PluginCardProps {
   name: string;
   marketplace: string;
   version: string;
-  installedAt: string;
   scope: string;
-  gitCommitSha?: string;
+  description?: string;
+  keywords?: string[];
+  author?: string;
   installPath?: string;
+  installedAt: string;
   lastUpdated?: string;
+  gitCommitSha?: string;
 }
 
-export function SkillCard({
+export function PluginCard({
   name,
   marketplace,
   version,
-  installedAt,
   scope,
-  gitCommitSha,
+  description,
+  keywords,
+  author,
   installPath,
+  installedAt,
   lastUpdated,
-}: SkillCardProps) {
+  gitCommitSha,
+}: PluginCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -50,50 +56,75 @@ export function SkillCard({
           {scope}
         </span>
       </div>
+      {description && (
+        <p className="text-xs text-foreground/60 mb-2 line-clamp-2">
+          {description}
+        </p>
+      )}
       <div className="text-xs text-foreground/50 space-y-1">
         <div className="flex items-center gap-1">
           <span className="text-foreground/40">Key:</span>
-          <CopyableId value={`${name}@${marketplace}`} truncate={30} />
+          <CopyableId
+            value={`${name}@${marketplace}`}
+            truncate={30}
+          />
         </div>
-        <div>
-          Version:{" "}
-          <span className="font-mono text-foreground/70">
-            {version.length > 12 ? version.slice(0, 12) : version}
-          </span>
-        </div>
-        {gitCommitSha && (
-          <div className="flex items-center gap-1">
-            <span className="text-foreground/40">SHA:</span>
-            <CopyableId value={gitCommitSha} truncate={8} />
+        {version && (
+          <div>
+            <span className="text-foreground/40">Version: </span>
+            <span className="font-mono text-foreground/70">{version}</span>
           </div>
         )}
-        <div>
-          Installed:{" "}
-          <span className="text-foreground/70">
-            {new Date(installedAt).toLocaleDateString()}
-          </span>
-        </div>
       </div>
 
       {expanded && (
         <div className="mt-3 pt-3 border-t border-card-border text-xs text-foreground/50 space-y-1">
+          {author && (
+            <div>
+              <span className="text-foreground/40">Author: </span>
+              <span className="text-foreground/70">
+                {typeof author === "string" ? author : (author as unknown as Record<string, unknown>).name as string || JSON.stringify(author)}
+              </span>
+            </div>
+          )}
+          {keywords && keywords.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {keywords.map((kw, i) => {
+                const label = typeof kw === "string" ? kw : (kw as Record<string, unknown>).name as string || JSON.stringify(kw);
+                return (
+                <span
+                  key={label + i}
+                  className="text-[10px] px-1.5 py-0.5 rounded bg-foreground/5 text-foreground/40"
+                >
+                  {label}
+                </span>
+                );
+              })}
+            </div>
+          )}
+          {gitCommitSha && (
+            <div className="flex items-center gap-1">
+              <span className="text-foreground/40">SHA:</span>
+              <CopyableId value={gitCommitSha} />
+            </div>
+          )}
           {installPath && (
             <div>
-              <span className="text-foreground/40">Install path: </span>
+              <span className="text-foreground/40">Path: </span>
               <span className="font-mono text-foreground/60 break-all">
                 {installPath}
               </span>
             </div>
           )}
-          {gitCommitSha && (
-            <div className="flex items-center gap-1">
-              <span className="text-foreground/40">Full SHA:</span>
-              <CopyableId value={gitCommitSha} />
-            </div>
-          )}
+          <div>
+            <span className="text-foreground/40">Installed: </span>
+            <span className="text-foreground/60">
+              {new Date(installedAt).toLocaleString()}
+            </span>
+          </div>
           {lastUpdated && (
             <div>
-              <span className="text-foreground/40">Last updated: </span>
+              <span className="text-foreground/40">Updated: </span>
               <span className="text-foreground/60">
                 {new Date(lastUpdated).toLocaleString()}
               </span>

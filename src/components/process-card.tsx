@@ -1,4 +1,5 @@
 import { StatusBadge } from "./status-badge";
+import { CopyableId } from "./copyable-id";
 
 interface ProcessChild {
   pid: number;
@@ -31,7 +32,7 @@ export function ProcessCard({
           <span className="font-mono text-sm font-semibold">{cmdName}</span>
           <StatusBadge status="running" />
         </div>
-        <span className="text-xs font-mono text-foreground/50">PID {pid}</span>
+        <CopyableId value={String(pid)} label="PID" className="text-foreground/50" />
       </div>
       <div className="text-xs text-foreground/60 font-mono truncate mb-1">
         {args}
@@ -46,7 +47,7 @@ export function ProcessCard({
               <span className="font-mono font-medium">
                 {child.command.split("/").pop()}
               </span>
-              <span className="text-foreground/40 ml-2">PID {child.pid}</span>
+              <CopyableId value={String(child.pid)} label="PID" className="text-foreground/40 ml-2" />
               <div className="text-foreground/50 font-mono truncate">
                 {child.args}
               </div>

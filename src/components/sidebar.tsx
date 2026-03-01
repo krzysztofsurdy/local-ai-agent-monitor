@@ -6,8 +6,10 @@ import {
   DashboardIcon,
   ProcessIcon,
   TeamsIcon,
+  ConversationIcon,
   TasksIcon,
   SkillsIcon,
+  AgentsIcon,
   ConfigIcon,
   LogsIcon,
   HistoryIcon,
@@ -20,8 +22,10 @@ const navItems: { href: string; label: string; Icon: IconComponent }[] = [
   { href: "/", label: "Dashboard", Icon: DashboardIcon },
   { href: "/processes", label: "Processes", Icon: ProcessIcon },
   { href: "/teams", label: "Teams", Icon: TeamsIcon },
+  { href: "/conversations", label: "Conversations", Icon: ConversationIcon },
   { href: "/tasks", label: "Tasks", Icon: TasksIcon },
   { href: "/skills", label: "Skills", Icon: SkillsIcon },
+  { href: "/agents", label: "Agents", Icon: AgentsIcon },
   { href: "/config", label: "Config", Icon: ConfigIcon },
   { href: "/logs", label: "Logs", Icon: LogsIcon },
   { href: "/history", label: "History", Icon: HistoryIcon },
@@ -32,11 +36,8 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-sidebar-bg text-sidebar-text flex flex-col z-10">
-      <div className="px-5 py-5 border-b border-white/10">
-        <h1 className="text-lg font-bold tracking-tight">
-          AI Agent Monitor
-        </h1>
-        <p className="text-xs text-white/40 mt-0.5">Local Activity Dashboard</p>
+      <div className="px-5 py-5 border-b border-white/10 flex justify-center">
+        <img src="/logo.png" alt="Barko" height={144} className="h-36 w-auto" />
       </div>
       <nav className="flex-1 py-3">
         {navItems.map((item) => {
