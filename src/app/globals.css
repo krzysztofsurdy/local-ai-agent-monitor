@@ -20,6 +20,8 @@
   --background: #020617;
   --foreground: #e2e8f0;
   --sidebar-bg: #0f172a;
+  --sidebar-text: #e2e8f0;
+  --sidebar-active: #3b82f6;
   --card-bg: #1e293b;
   --card-border: #334155;
   --status-active: #22c55e;
@@ -27,6 +29,23 @@
   --status-idle: #94a3b8;
   --status-completed: #3b82f6;
   --status-pending: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #020617;
+    --foreground: #e2e8f0;
+    --sidebar-bg: #0f172a;
+    --sidebar-text: #e2e8f0;
+    --sidebar-active: #3b82f6;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --status-active: #22c55e;
+    --status-working: #eab308;
+    --status-idle: #94a3b8;
+    --status-completed: #3b82f6;
+    --status-pending: #94a3b8;
+  }
 }
 
 @theme inline {
