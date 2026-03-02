@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ToastProvider } from "@/components/toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +32,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          <Sidebar />
-          <main className="ml-56 min-h-screen p-6">{children}</main>
+          <ToastProvider>
+            <Sidebar />
+            <main className="ml-56 min-h-screen p-6">{children}</main>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

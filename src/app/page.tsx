@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { DashboardStats } from "@/components/dashboard-stats";
 import { TeamCard } from "@/components/team-card";
 import { useSSE } from "@/lib/use-sse";
+import { useNotifications } from "@/lib/use-notifications";
+import { useTaskNotifications } from "@/lib/use-task-notifications";
+import { useToast } from "@/components/toast";
 import type { AIProcess, AITeam, AITask, AISkill } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -11,6 +14,9 @@ export default function DashboardPage() {
   const [teams, setTeams] = useState<AITeam[]>([]);
   const [tasks, setTasks] = useState<AITask[]>([]);
   const [skills, setSkills] = useState<AISkill[]>([]);
+  const { notify } = useNotifications();
+  const { addToast } = useToast();
+  useTaskNotifications({ notify, addToast });
 
   const fetchData = useCallback(async () => {
     const [teamsRes, tasksRes, skillsRes] = await Promise.all([

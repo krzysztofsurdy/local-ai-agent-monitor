@@ -19,6 +19,8 @@ import {
   LiveIcon,
 } from "./icons";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationToggle } from "./notification-toggle";
+import { useNotifications } from "@/lib/use-notifications";
 import { type ComponentType, type SVGProps } from "react";
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
@@ -42,13 +44,14 @@ const navItems: { href: string; label: string; Icon: IconComponent }[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { enabled, toggle } = useNotifications();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-sidebar-bg text-sidebar-text flex flex-col z-10">
       <div className="px-5 py-5 border-b border-white/10 flex justify-center">
         <img src="/logo.png" alt="Barko" height={144} className="h-36 w-auto" />
       </div>
-      <nav className="flex-1 py-3">
+      <nav className="flex-1 py-3 overflow-y-auto">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -71,7 +74,10 @@ export function Sidebar() {
       </nav>
       <div className="px-5 py-4 border-t border-white/10 flex items-center justify-between">
         <span className="text-xs text-white/30">v0.1.0</span>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <NotificationToggle enabled={enabled} onToggle={toggle} />
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );
