@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { StatusBadge } from "@/components/status-badge";
 import { CopyableId } from "@/components/copyable-id";
+import { AgentTimeline } from "@/components/agent-timeline";
+import { buildTeamTimeline } from "@/lib/timeline-builder";
 import { useSSE } from "@/lib/use-sse";
 import type { AITeam, AITask } from "@/lib/types";
 
@@ -111,6 +113,9 @@ export default function TeamDetailPage() {
           ))}
         </div>
       </div>
+
+      {/* Agent Timeline */}
+      <AgentTimeline timeline={buildTeamTimeline(team, tasks)} />
 
       {/* Task Board */}
       <div>
