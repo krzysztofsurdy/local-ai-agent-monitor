@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { MessageBubble } from "@/components/message-bubble";
+import { SessionDiffPanel } from "@/components/session-diff-panel";
 import { CopyableId } from "@/components/copyable-id";
+import { extractFileChanges } from "@/lib/session-diff";
 import type { AIMessage } from "@/lib/types";
 
 function formatTokens(n: number): string {
@@ -103,6 +105,8 @@ export default function ConversationDetailPage() {
           </div>
         </div>
       </div>
+
+      <SessionDiffPanel changes={extractFileChanges(messages)} />
 
       {/* Messages */}
       {loading ? (
