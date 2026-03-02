@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { MessageBubble } from "@/components/message-bubble";
 import { SessionDiffPanel } from "@/components/session-diff-panel";
+import { ExportButton } from "@/components/export-button";
 import { CopyableId } from "@/components/copyable-id";
 import { extractFileChanges } from "@/lib/session-diff";
 import type { AIMessage } from "@/lib/types";
@@ -66,6 +67,9 @@ export default function ConversationDetailPage() {
         <div className="flex items-center gap-3 mb-3">
           <h1 className="text-lg font-bold">Conversation</h1>
           <CopyableId value={sessionId} truncate={16} />
+          <div className="ml-auto">
+            <ExportButton messages={messages} sessionId={sessionId} />
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
