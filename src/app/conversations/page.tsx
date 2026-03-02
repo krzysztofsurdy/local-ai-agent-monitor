@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { CopyableId } from "@/components/copyable-id";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ModelFilter } from "@/components/model-filter";
 import { useFavorites } from "@/lib/use-favorites";
 import type { AIConversationSession } from "@/lib/types";
 
@@ -16,6 +17,7 @@ function formatTokens(n: number): string {
 export default function ConversationsPage() {
   const [sessions, setSessions] = useState<AIConversationSession[]>([]);
   const [search, setSearch] = useState("");
+  const [modelFilter, setModelFilter] = useState<string | null>(null);
   const { toggle, isFavorite, favorites } = useFavorites();
 
   const fetchSessions = useCallback(async () => {
@@ -27,13 +29,27 @@ export default function ConversationsPage() {
     fetchSessions();
   }, [fetchSessions]);
 
-  const filtered = search
-    ? sessions.filter(
+  const uniqueModels = useMemo(
+    () =>
+      [...new Set(sessions.map((s) => s.model).filter(Boolean) as string[])].sort(),
+    [sessions]
+  );
+
+  const filtered = useMemo(() => {
+    let result = sessions;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
         (s) =>
-          s.sessionId.toLowerCase().includes(search.toLowerCase()) ||
-          s.projectPath.toLowerCase().includes(search.toLowerCase())
-      )
-    : sessions;
+          s.sessionId.toLowerCase().includes(q) ||
+          s.projectPath.toLowerCase().includes(q)
+      );
+    }
+    if (modelFilter) {
+      result = result.filter((s) => s.model === modelFilter);
+    }
+    return result;
+  }, [sessions, search, modelFilter]);
 
   const favoriteSessions = useMemo(
     () => filtered.filter((s) => isFavorite(s.sessionId)),
@@ -139,13 +155,20 @@ export default function ConversationsPage() {
         </p>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search by session ID or project path..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-md px-3 py-2 text-sm rounded-lg border border-card-border bg-card-bg focus:outline-none focus:border-sidebar-active"
-      />
+      <div className="flex items-center gap-4 flex-wrap">
+        <input
+          type="text"
+          placeholder="Search by session ID or project path..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full max-w-md px-3 py-2 text-sm rounded-lg border border-card-border bg-card-bg focus:outline-none focus:border-sidebar-active"
+        />
+        <ModelFilter
+          models={uniqueModels}
+          selected={modelFilter}
+          onChange={setModelFilter}
+        />
+      </div>
 
       {favoriteSessions.length > 0 && (
         <div>

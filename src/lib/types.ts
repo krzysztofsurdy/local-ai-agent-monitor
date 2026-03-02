@@ -90,6 +90,7 @@ export interface AIConversationSession {
   endTime?: string;
   totalInputTokens: number;
   totalOutputTokens: number;
+  model?: string;
   provider: AIProvider;
 }
 

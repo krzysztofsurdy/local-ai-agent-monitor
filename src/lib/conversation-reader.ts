@@ -11,6 +11,7 @@ export interface RawConversationSession {
   endTime?: string;
   totalInputTokens: number;
   totalOutputTokens: number;
+  model?: string;
 }
 
 export interface RawMessage {
@@ -65,6 +66,7 @@ export function getConversationSessions(limit = 100): RawConversationSession[] {
           let totalInputTokens = 0;
           let totalOutputTokens = 0;
           let messageCount = 0;
+          let model: string | undefined;
 
           // Parse first line for start time
           const firstLine = JSON.parse(lines[0]);
@@ -76,6 +78,9 @@ export function getConversationSessions(limit = 100): RawConversationSession[] {
               const parsed = JSON.parse(line);
               if (parsed.type === "user" || parsed.type === "assistant") {
                 messageCount++;
+              }
+              if (!model && parsed.type === "assistant" && parsed.message?.model) {
+                model = parsed.message.model;
               }
               if (parsed.timestamp) {
                 endTime = parsed.timestamp;
@@ -101,6 +106,7 @@ export function getConversationSessions(limit = 100): RawConversationSession[] {
             endTime,
             totalInputTokens,
             totalOutputTokens,
+            model,
           });
 
           // Use file mtime as a fallback sort key if no startTime
