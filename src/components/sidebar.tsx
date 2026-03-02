@@ -73,7 +73,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="px-5 py-4 border-t border-white/10 flex items-center justify-between">
-        <span className="text-xs text-white/30">v0.1.0</span>
+        <span className="text-xs text-white/30">v0.2.0</span>
         <div className="flex items-center gap-1">
           <NotificationToggle enabled={enabled} onToggle={toggle} />
           <ThemeToggle />
