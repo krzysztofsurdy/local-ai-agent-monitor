@@ -15,6 +15,10 @@ A Next.js web dashboard to monitor and visualize all AI coding agent activity on
 
 ## Features
 
+<p align="center">
+  <img src="preview.png" alt="Preview" />
+</p>
+
 - **Dashboard** — Summary cards with live counts of processes, teams, tasks, and sessions
 - **Processes** — Live view of running Claude CLI processes and their child processes
 - **Teams** — Agent teams with member avatars, roles, and models
